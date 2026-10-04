@@ -1,0 +1,33 @@
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+
+namespace DesktopCaptureDLL
+{
+    public class CaptureTool
+    {
+        // Método para capturar el escritorio con reducción de resolución
+        public static byte[] CaptureDesktopAsJpeg(int newWidth, int newHeight)
+        {
+            // Capturar la pantalla completa
+            Bitmap bmp = new Bitmap(Screen.PrimaryScreen.Bounds.Width,
+                                    Screen.PrimaryScreen.Bounds.Height,
+                                    PixelFormat.Format32bppArgb);
+
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.CopyFromScreen(0, 0, 0, 0, bmp.Size);
+            }
+
+            // Redimensionar la imagen para reducir la resolución
+            Bitmap resizedBmp = new Bitmap(bmp, newWidth, newHeight);
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                resizedBmp.Save(ms, ImageFormat.Jpeg); // Guardar en formato JPEG
+                return ms.ToArray(); // Retornar la imagen como byte[]
+            }
+        }
+    }
+}

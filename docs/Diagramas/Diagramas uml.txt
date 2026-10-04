@@ -1,0 +1,159 @@
+Caso de uso : 
+@startuml
+!theme plain
+left to right direction
+skinparam packageStyle rectangle
+
+
+package "Casos de Uso" {
+    actor Usuario as "👤 Usuario"
+    usecase "Iniciar Sesión" as UC1
+    usecase "Registrarse" as UC2
+    usecase "Recuperar Contraseña" as UC3
+    usecase "Moverse por el Entorno" as UC4
+    usecase "Enviar Archivos" as UC5
+    usecase "Recibir Archivos" as UC6
+    usecase "Chat de Texto" as UC7
+    usecase "Chat de Voz" as UC8
+    usecase "Cerrar Sesión" as UC10
+    usecase "Lobby u oficina" as UC11
+}
+
+Usuario --> UC1
+Usuario --> UC2
+Usuario --> UC3
+
+UC2 --> UC1 : usuario registrado
+UC3 --> UC1 : cuenta recuperada
+
+UC1 --> UC11 : sesión iniciada
+
+UC11 --> UC4 
+UC11 --> UC5 
+UC11 --> UC6 
+UC11 --> UC7 
+UC11 --> UC8 
+UC11 --> UC10 
+UC10 --> UC1 
+
+
+@enduml
+
+
+
+Diagrama de clases
+
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+
+package "Diagrama de Clases" {
+class Usuario {
+    - id: int
+    - nombre: string
+    - apellido: string
+    - usuario: string
+    - correo: string
+    - contrasena_hash: string
+    - creado_el: DateTime
+    + iniciarSesion()
+    + registrarse()
+    + recuperarContraseña()
+}
+
+class Archivo {
+    - id: int
+    - remitente_id: int
+    - destinatario_id: int
+    - asunto: string
+    - nombre_original: string
+    - nombre_servidor: string
+    - url: string
+    - fecha_subida: DateTime
+    - leido: bool
+    + guardarArchivo()
+    + descargarArchivo()
+}
+
+class UsuarioEnChatDeVoz {
+    - id: int
+    - id_usuario: int
+    - nombre_usuario: string
+    - sala: string
+    - fecha: DateTime
+    + unirseSala()
+}
+
+class RegistroDeEntrada {
+    - id: int
+    - id_usuario: int
+    - sala: string
+    - fecha: DateTime
+    + registrarEntrada()
+}
+
+class RegistroDeSalida {
+    - id: int
+    - id_usuario: int
+    - sala: string
+    - fecha: DateTime
+    + registrarSalida()
+}
+
+class RegistroSalasCreadasPorUsuario {
+    - id: int
+    - id_usuario: int
+    - sala: string
+    - fecha: DateTime
+    + crearSala()
+}
+
+' Clases de aplicación
+class ClienteUnity {
+    + moverse()
+    + hablar()
+    + enviarArchivo()
+    + recibirArchivo()
+    + verUsuarios()
+}
+
+class ServidorPHP {
+    + validarCredenciales()
+    + gestionarSubida()
+    + gestionarDescarga()
+    + gestionarNotificaciones()
+    + obtenerUsuarios()
+    + usuarioSalaDeVoz()
+}
+
+class Vivox {
+    + crearCanalDeVoz()
+    + gestionarUsuarios()
+}
+}
+
+' Relaciones
+Usuario "1" -- "n" Archivo : remitente >
+Usuario "1" -- "n" Archivo : destinatario >
+Usuario "1" -- "n" UsuarioEnChatDeVoz : participa >
+Usuario "1" -- "n" RegistroDeEntrada : entradas >
+Usuario "1" -- "n" RegistroDeSalida : salidas >
+Usuario "1" -- "n" RegistroSalasCreadasPorUsuario : crea >
+
+ClienteUnity --> Usuario : gestiona
+ClienteUnity --> Vivox : conecta/desconecta
+ClienteUnity --> ServidorPHP : comunica
+
+ServidorPHP --> Usuario : autentica
+ServidorPHP --> Archivo : gestiona archivos
+ServidorPHP --> UsuarioEnChatDeVoz : gestiona salas
+ServidorPHP --> RegistroDeEntrada : registra entrada
+ServidorPHP --> RegistroDeSalida : registra salida
+ServidorPHP --> RegistroSalasCreadasPorUsuario : crea sala
+
+@enduml
+
+
+
+
+
